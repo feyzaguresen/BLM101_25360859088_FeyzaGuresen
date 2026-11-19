@@ -1,0 +1,4 @@
+# Yardımcı araçlar ve yerel dosyalar
+.araclar/
+__pycache__/
+*.pyc
