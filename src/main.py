@@ -1,11 +1,7 @@
+
 # BLM101 Bilgisayar Mühendisliğine Giriş - Dönem Projesi
 # Feyza Güreşen - 25360859088
 # Proje 4: Makine Döngüsü ve Akümülatör (Accumulator) CPU Simülatörü
-#
-# Bu ödevde Brookshear (12. Baskı, Bölüm 2) kitabındaki makine döngüsünü 
-# (Fetch -> Decode -> Execute) ve tek yazmaçlı Akümülatör mimarisini modelledim.
-# Kurallara uygun olarak fonksiyon (def) kullanmadım, sadece while döngüsü 
-# ve if-elif-else bloklarıyla kodladım.
 
 # --------------------------------------------------
 # 1. Donanım ve Yazmaçlar (Registers)
@@ -23,33 +19,58 @@ print("==================================================")
 print("   Mini CPU ve Akümülatör (ACC) Simülatörü")
 print("   Öğrenci: Feyza Güreşen | No: 25360859088")
 print("==================================================")
-print("Desteklenen komutlar: LOAD X, ADD X, SUB X, MUL X, HALT\n")
+print("Desteklenen komutlar: LOAD X, ADD X, SUB X, MUL X, DIV X, HALT\n")
 print("1 - Yönergedeki örnek programı çalıştır (LOAD 10, ADD 5, SUB 3, HALT)")
 print("2 - Kendi komutlarını klavyeden gir")
 
-secim = input("\nSeçiminiz (1 veya 2): ")
+secim = input("\nSeçiminiz (1 veya 2): ").strip()
+
+bellek = []
 
 if secim == "1":
-    # Proje yönergesinde verilen hazır komutlar
     bellek = ["LOAD 10", "ADD 5", "SUB 3", "HALT"]
     print("\nHazır komutlar belleğe yüklendi:")
     for k in bellek:
         print(" ->", k)
 else:
-    print("\nKomutları sırayla yazınız (Bitirmek için HALT yazın):")
-    komut_no = 1
-    giris_suruyor = True
-    while giris_suruyor:
-        satir = input(str(komut_no) + ". Komut: ").strip()
-        if satir != "":
-            bellek.append(satir)
-            if satir.upper() == "HALT":
-                giris_suruyor = False
-            komut_no = komut_no + 1
-        else:
-            print("Boş komut giremezsiniz!")
+    print()
 
-# Eğer kullanıcı liste sonuna HALT yazmadıysa işlemcinin güvenle durması için ekliyoruz
+    # 1. Başlangıç sayısı
+    while True:
+        sayi = input("Başlangıç sayısını giriniz: ").strip()
+        if sayi.lstrip("-").isdigit():
+            bellek.append("LOAD " + sayi)
+            break
+        print("Lütfen geçerli bir tam sayı giriniz!")
+
+    # 2. İşlem ve sayı
+    devam = True
+    while devam:
+        while True:
+            print("\nYapmak istediğiniz işlemi giriniz:")
+            islem = input("(1 = Toplama, 2 = Çıkarma, 3 = Çarpma, 4 = Bölme): ").strip()
+            if islem in ("1", "2", "3", "4"):
+                break
+            print("Lütfen 1, 2, 3 veya 4 giriniz!")
+
+        komut_adi = {"1": "ADD", "2": "SUB", "3": "MUL", "4": "DIV"}[islem]
+
+        while True:
+            sayi = input("İşlemde kullanılacak sayıyı giriniz: ").strip()
+            if sayi.lstrip("-").isdigit():
+                bellek.append(komut_adi + " " + sayi)
+                break
+            print("Lütfen geçerli bir tam sayı giriniz!")
+
+        cevap = input("\nBaşka işlem eklemek ister misiniz? (e/h): ").strip().lower()
+        if cevap != "e":
+            devam = False
+
+    print("\nBelleğe yüklenen komutlar:")
+    for k in bellek:
+        print(" ->", k)
+
+# Listenin sonunda HALT yoksa ekle
 if len(bellek) == 0:
     bellek = ["HALT"]
 elif bellek[-1].upper() != "HALT":
@@ -116,6 +137,15 @@ while calisiyor:
         onceki = akumulator
         akumulator = akumulator * sayi
         print(f"3. Execute: MUL çalıştı. {onceki} * {sayi} = {akumulator}")
+
+    elif islem == "DIV":
+        # Akümülatördeki sayıyı yeni sayıya bölüyoruz (tamsayı bölmesi)
+        if sayi != 0:
+            onceki = akumulator
+            akumulator = akumulator // sayi
+            print(f"3. Execute: DIV çalıştı. {onceki} // {sayi} = {akumulator}")
+        else:
+            print("3. Execute: HATA! 0'a bölme yapılamaz (Divide by Zero). İşlem atlandı.")
 
     elif islem == "HALT":
         # İşlemciyi durduruyoruz

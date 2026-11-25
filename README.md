@@ -24,11 +24,11 @@
 ```text
 BLM101_25360859088_FeyzaGuresen/
 │
-├── src/                      # Python kaynak kodları dizini
+├── src/
 │   └── main.py               # Ana CPU simülatörü programı
 │
-├── sunum.pdf                 # En az 25-30 sayfa kuralına uygun 28 sayfalık teorik sunum (PDF)
-├── sunum.pptx                # Sunumun düzenlenebilir PowerPoint formatı (28 Slayt)
+├── sunum.pdf                 # 28 sayfalık teorik sunum (PDF)
+├── sunum.pptx                # Sunumun düzenlenebilir PowerPoint formatı (28 slayt)
 └── README.md                 # Proje dokümantasyonu (Bu dosya)
 ```
 
@@ -36,14 +36,9 @@ BLM101_25360859088_FeyzaGuresen/
 
 ## ⚙️ Kurulum ve Çalıştırma
 
-### Gereksinimler
-- **Python Sürümü:** Python 3.8 veya üzeri (Tavsiye edilen: Python 3.10+)
-- **İşletim Sistemi:** Windows / macOS / Linux (Platform bağımsız)
-- **Ekstra Kütüphane:** Simülatörün kendisi (`src/main.py`) tamamen saf standart Python ile yazılmıştır; **hiçbir harici kütüphane kurulumu gerektirmez**.
+**Gereksinim:** Python 3.8 veya üzeri. Program saf standart Python ile yazılmıştır, harici kütüphane gerekmez.
 
-### Çalıştırma Adımları
-
-1. Terminali (PowerShell veya Komut Satırı) proje klasöründe açınız:
+1. Terminali proje klasöründe açınız:
    ```bash
    cd c:\Users\feyyz\OneDrive\Desktop\proje
    ```
@@ -53,76 +48,70 @@ BLM101_25360859088_FeyzaGuresen/
    python src/main.py
    ```
 
-3. Program açıldığında karşınıza iki seçenek gelecektir:
-   - `1`: Yönergede verilen hazır örnek komut dizisini (`LOAD 10`, `ADD 5`, `SUB 3`, `HALT`) otomatik çalıştırır.
-   - `2`: Kendi komutlarınızı klavyeden girmenizi sağlar.
+3. Program açıldığında iki seçenek sunar:
+   - `1`: Yönergedeki hazır örnek programı (`LOAD 10`, `ADD 5`, `SUB 3`, `HALT`) çalıştırır.
+   - `2`: Kullanıcıya adım adım sorular sorarak kendi programını oluşturur: önce başlangıç sayısı (`LOAD X`), ardından işlem (`1 = Toplama`, `2 = Çıkarma`, `3 = Çarpma`, `4 = Bölme`) ve sayı sorulur. *"Başka işlem eklemek ister misiniz? (e/h)"* sorusuna `h` denince giriş biter ve `HALT` komutu otomatik eklenir.
+
+Desteklenen komutlar: `LOAD X`, `ADD X`, `SUB X`, `MUL X`, `DIV X`, `HALT`
 
 ---
 
 ## 🧠 Proje ve Algoritma Açıklaması
 
-### 1. Temel Mimari Yaklaşımı
-Bu proje, bilgisayar mimarisinin en temel taşlarından biri olan **tek yazmaçlı (Akümülatör tabanlı)** bir işlemcinin donanım döngüsünü simüle eder.
+Bu proje, **tek yazmaçlı (Akümülatör tabanlı)** bir işlemcinin makine döngüsünü simüle eder. Kod; sınıflar (OOP) veya kendi yazılmış fonksiyonlar (`def`) kullanılmadan, `while` döngüsü ve `if-elif-else` karar blokları ile yazılmıştır.
 
-Gereksiz karmaşıklıktan kaçınmak ve kısa sınavda (quiz) her satıra tam hakimiyet sağlayabilmek amacıyla kod; sınıflar (OOP) veya karmaşık harici fonksiyonlar yerine, donanımın doğal akışını taklit eden **modüler bölümler**, **`while` döngüsü** ve **`if-elif-else` karar blokları** ile tasarlanmıştır.
+### Donanım Bileşenlerinin Yazılımsal Temsili
 
-### 2. Donanım Bileşenlerinin Yazılımsal Temsili
-İşlemcinin fiziksel donanım parçaları programda şu değişkenlerle modellenmiştir:
-
-| Donanım Bileşeni | Değişken Adı | Görevi ve Açıklaması |
+| Donanım Bileşeni | Değişken Adı | Görevi |
 | :--- | :--- | :--- |
-| **Akümülatör (ACC)** | `akumulator = 0` | Aritmetik işlemlerin bir terimini ve işlem sonucunu tutan ana çalışma yazmacı. |
-| **Program Sayacı (PC)** | `pc = 0` | Bellekten sıradaki okunacak komutun adres/indis numarasını tutar. |
-| **Komut Yazmacı (IR)** | `ir = ""` | Bellekten o anda çekilmiş (Fetch edilmiş) ham komut dizesini saklar. |
-| **Ana Bellek (RAM)** | `bellek = [...]` | Komut satırlarının sırayla saklandığı liste veri yapısı. |
-| **Çalışma Bayrağı** | `calisiyor = True` | HALT komutu gelene veya bellek bitene kadar işlemcinin saat vuruşunu sürdüren kontrol bayrağı. |
+| **Akümülatör (ACC)** | `akumulator = 0` | İşlem sonuçlarının tutulduğu ana çalışma yazmacı. |
+| **Program Sayacı (PC)** | `pc = 0` | Sıradaki okunacak komutun bellek adresini tutar. |
+| **Komut Yazmacı (IR)** | `ir = ""` | Bellekten o anda alınan komutu saklar. |
+| **Ana Bellek (RAM)** | `bellek = []` | Komutların sırayla saklandığı liste. |
+| **Çalışma Bayrağı** | `calisiyor = True` | HALT gelene veya bellek bitene kadar döngüyü sürdürür. |
 
----
+### Desteklenen Komut Kümesi
 
-### 3. Makine Döngüsü (Machine Cycle) Aşamaları
+| Komut | Açıklama | Donanımsal Karşılığı |
+| :--- | :--- | :--- |
+| `LOAD X` | Akümülatöre X sayısını yükler | `akumulator = sayi` |
+| `ADD X` | Akümülatördeki sayıya X ekler | `akumulator = akumulator + sayi` |
+| `SUB X` | Akümülatördeki sayıdan X çıkarır | `akumulator = akumulator - sayi` |
+| `MUL X` | Akümülatördeki sayıyı X ile çarpar | `akumulator = akumulator * sayi` |
+| `DIV X` | Akümülatördeki sayıyı X'e böler (Tamsayı bölmesi) | `akumulator = akumulator // sayi` *(0'a bölme korumalı)* |
+| `HALT` | Programı ve işlemciyi durdurur | `calisiyor = False` |
 
-Her bir saat vuruşunda (`while` döngüsü adımında) sırasıyla 3 aşama yürütülür:
+### Makine Döngüsü (Fetch - Decode - Execute)
+
+Her döngü adımında sırasıyla şu 3 aşama yürütülür:
 
 ```text
 +-----------------------------------------------------------+
 |                   1. FETCH (Komutu Getir)                 |
 |  - Bellek[PC] okunur ve Komut Yazmacına (IR) aktarılır.   |
 |  - Program Sayacı hemen 1 artırılır: PC = PC + 1          |
+|  - PC bellek sınırını aşarsa döngü durdurulur.            |
 +-----------------------------+-----------------------------+
                               |
                               v
 +-----------------------------------------------------------+
 |                   2. DECODE (Komutu Çöz)                  |
-|  - IR'deki metin parçalanır (split).                     |
+|  - IR'deki metin parçalanır (split).                      |
 |  - İşlem Kodu (Opcode) ve Sayısal Değer (Operand) ayrılır.|
 +-----------------------------+-----------------------------+
                               |
                               v
 +-----------------------------------------------------------+
 |                  3. EXECUTE (Komutu Yürüt)                |
-|  - if-elif-else blokları ile ilgili ALU işlemi yapılır.   |
+|  - if-elif-else blokları ile ilgili işlem yapılır.        |
 |  - Sonuç doğrudan Akümülatör (ACC) üzerine yazılır.       |
-|  - "PC: X | Akümülatör: Y" durum raporu basılır.         |
+|  - "PC: X | Akümülatör: Y" durum raporu basılır.          |
 +-----------------------------------------------------------+
 ```
 
----
+### Örnek Yürütme ve İzleme (Trace) Tablosu
 
-### 4. Desteklenen Komut Kümesi
-
-| Komut | Açıklama | Donanımsal Karşılığı |
-| :--- | :--- | :--- |
-| `LOAD X` | Akümülatöre X değerini yükler | `akumulator = sayi` |
-| `ADD X` | Akümülatördeki mevcut değere X ekler | `akumulator = akumulator + sayi` |
-| `SUB X` | Akümülatördeki mevcut değerden X çıkarır | `akumulator = akumulator - sayi` |
-| `MUL X` | Akümülatördeki mevcut değeri X ile çarpar | `akumulator = akumulator * sayi` |
-| `HALT` | Programı ve işlemciyi durdurur | `calisiyor = False` |
-
----
-
-### 5. Örnek Yürütme ve İzleme (Trace) Tablosu
-
-Yönergede belirtilen `LOAD 10`, `ADD 5`, `SUB 3`, `HALT` komutları çalıştırıldığında simülasyonun adım adım izleme tablosu:
+`LOAD 10`, `ADD 5`, `SUB 3`, `HALT` programının adım adım izlemesi:
 
 | Döngü Adımı | Bellek Adresi | Yürütülen Komut (IR) | İşlem Mantığı | PC Değeri | Akümülatör (ACC) |
 | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -132,29 +121,10 @@ Yönergede belirtilen `LOAD 10`, `ADD 5`, `SUB 3`, `HALT` komutları çalıştı
 | **3. Adım** | `2` | `SUB 3` | 15 - 3 çıkarıldı | 3 | **12** |
 | **4. Adım** | `3` | `HALT` | İşlemci durduruldu | 4 | **12** |
 
----
-
-## 🎤 Bireysel Kısa Sınav (Quiz) Hazırlık Rehberi (35 Puan)
-
-Hocaların sözlü sınavda kod üzerinden yöneltebileceği muhtemel sorular ve net cevapları:
-
-1. **Soru:** *"Program Sayacı (PC) neden komut okunur okunmaz hemen 1 artırılıyor?"*  
-   **Cevap:** Çünkü işlemci komutu bellekten çeker çekmez bir sonraki çevrimde hangi adrese gideceğini şimdiden hazır etmek zorundadır. Aksi halde bir sonraki Fetch adresi bilinemez.
-
-2. **Soru:** *"ADD 5 komutunda toplanacak birinci sayı nerede saklanıyor?"*  
-   **Cevap:** Akümülatör mimarisinde komutlar tek adreslidir. Birinci sayı her zaman zaten Akümülatör'ün içinde bulunan mevcut değerdir. Komut sadece ikinci sayıyı (5) belirtir.
-
-3. **Soru:** *"Kodunuza bölme (DIV X) komutu eklemek istesem ne yaparsınız?"*  
-   **Cevap:** `src/main.py` dosyasındaki `EXECUTE` bölümüne bir `elif islem == "DIV":` şartı açarak `akumulator = akumulator // sayi` satırını ve durum çıktısını eklerim.
-
-4. **Soru:** *"HALT komutunun gerçek donanımdaki karşılığı nedir?"*  
-   **Cevap:** İşlemciye giden saat sinyalini (clock pulse) durdurarak işlemciyi uyku / bekleme moduna geçirmektir. Kodumuzda ise `calisiyor = False` yapılarak `while` döngüsünden çıkılır.
-
-5. **Soru:** *"Neden fonksiyon (`def`) kullanmadınız?"*  
-   **Cevap:** Gerçek işlemci donanımı yazılımsal fonksiyon çağırmaz; saat sinyaliyle sürekli dönen tek bir fiziksel çevrimdir (`while`). Komutlar ise mantık kapılarıyla çözülür (`if-elif-else`). Bu yüzden donanımı en yalın, doğrudan ve donanım mantığına en uygun şekilde modelledim.
+> **Not:** PC, komut alındıktan (Fetch) hemen sonra artırıldığı için her adımın sonunda **bir sonraki komutun adresini** gösterir.
 
 ---
 
 ## 📊 Sunum Dosyası Bilgisi
-- **sunum.pdf:** Yönergedeki *"en az 25-30 sayfalık detaylı bir sunum"* kuralına tam uygun olarak hazırlanmış **28 sayfalık** PDF dosyası reponun ana dizinindedir.
-- **sunum.pptx:** Microsoft PowerPoint ile sunum yapabilmeniz veya slaytları düzenleyebilmeniz için hazırlanan 28 slaytlık sunum dosyasıdır.
+- **sunum.pdf:** 28 sayfalık teorik sunum, reponun ana dizinindedir.
+- **sunum.pptx:** Sunumun düzenlenebilir PowerPoint sürümüdür (28 slayt).
