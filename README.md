@@ -14,8 +14,8 @@
 **4. Proje: Makine Döngüsü ve Akümülatör (Accumulator) CPU Simülatörü**  
 *(Öğrenci numarasının son rakamı 3 veya 8 olan öğrenciler için tanımlanan proje konusu)*
 
-- **Ders Kitabı Referansı:** Chapter 2 (*2.1 Computer Architecture, 2.3 Program Execution: Fetch, Decode, Execute*)  
-  *Referans Kitap:* J. Glenn Brookshear & Dennis Brylow, *Computer Science: An Overview* (13th Edition).
+- **Ders Kitabı Referansı:** Bölüm 2 (*2.1 Bilgisayar Mimarisi, 2.3 Programın Çalıştırılması: Alma, Çözümleme, Yürütme*)  
+  *Referans Kitap:* J. Glenn Brookshear & Dennis Brylow, *Bilgisayar Bilimine Giriş* (12. Baskı - Çeviri: Pearson).
 
 ---
 
@@ -72,8 +72,8 @@ Gereksiz karmaşıklıktan kaçınmak ve kısa sınavda (quiz) her satıra tam h
 | Donanım Bileşeni | Değişken Adı | Görevi ve Açıklaması |
 | :--- | :--- | :--- |
 | **Akümülatör (ACC)** | `akumulator = 0` | Aritmetik işlemlerin bir terimini ve işlem sonucunu tutan ana çalışma yazmacı. |
-| **Program Sayacı (PC)** | `program_sayaci = 0` | Bellekten sıradaki okunacak komutun adres/indis numarasını tutar. |
-| **Komut Yazmacı (IR)** | `komut_yazmaci = ""` | Bellekten o anda çekilmiş (Fetch edilmiş) ham komut dizesini saklar. |
+| **Program Sayacı (PC)** | `pc = 0` | Bellekten sıradaki okunacak komutun adres/indis numarasını tutar. |
+| **Komut Yazmacı (IR)** | `ir = ""` | Bellekten o anda çekilmiş (Fetch edilmiş) ham komut dizesini saklar. |
 | **Ana Bellek (RAM)** | `bellek = [...]` | Komut satırlarının sırayla saklandığı liste veri yapısı. |
 | **Çalışma Bayrağı** | `calisiyor = True` | HALT komutu gelene veya bellek bitene kadar işlemcinin saat vuruşunu sürdüren kontrol bayrağı. |
 
@@ -149,6 +149,9 @@ Hocaların sözlü sınavda kod üzerinden yöneltebileceği muhtemel sorular ve
 
 4. **Soru:** *"HALT komutunun gerçek donanımdaki karşılığı nedir?"*  
    **Cevap:** İşlemciye giden saat sinyalini (clock pulse) durdurarak işlemciyi uyku / bekleme moduna geçirmektir. Kodumuzda ise `calisiyor = False` yapılarak `while` döngüsünden çıkılır.
+
+5. **Soru:** *"Neden fonksiyon (`def`) kullanmadınız?"*  
+   **Cevap:** Gerçek işlemci donanımı yazılımsal fonksiyon çağırmaz; saat sinyaliyle sürekli dönen tek bir fiziksel çevrimdir (`while`). Komutlar ise mantık kapılarıyla çözülür (`if-elif-else`). Bu yüzden donanımı en yalın, doğrudan ve donanım mantığına en uygun şekilde modelledim.
 
 ---
 

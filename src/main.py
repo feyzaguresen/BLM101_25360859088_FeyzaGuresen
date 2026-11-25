@@ -1,185 +1,142 @@
-# ==============================================================================
 # BLM101 Bilgisayar Mühendisliğine Giriş - Dönem Projesi
+# Feyza Güreşen - 25360859088
 # Proje 4: Makine Döngüsü ve Akümülatör (Accumulator) CPU Simülatörü
-# 
-# Öğrenci Adı Soyadı : Feyza Güreşen
-# Öğrenci Numarası   : 25360859088
-# 
-# AÇIKLAMA:
-# Bu program, temel bir merkezi işlem biriminin (CPU) makine döngüsünü 
-# (Fetch -> Decode -> Execute) simüle eden tek yazmaçlı (Akümülatör tabanlı)
-# bir işlemci modelidir. Kod, sınavda kolay anlaşılması ve savunulabilmesi için
-# yalnızca temel if-else şart blokları ve while döngüsü ile yazılmıştır.
-# ==============================================================================
+#
+# Bu ödevde Brookshear (12. Baskı, Bölüm 2) kitabındaki makine döngüsünü 
+# (Fetch -> Decode -> Execute) ve tek yazmaçlı Akümülatör mimarisini modelledim.
+# Kurallara uygun olarak fonksiyon (def) kullanmadım, sadece while döngüsü 
+# ve if-elif-else bloklarıyla kodladım.
 
-# ------------------------------------------------------------------------------
-# BÖLÜM 1: CPU DONANIM VE YAZMAÇ (REGISTER) TANIMLAMALARI
-# ------------------------------------------------------------------------------
+# --------------------------------------------------
+# 1. Donanım ve Yazmaçlar (Registers)
+# --------------------------------------------------
+akumulator = 0       # Akümülatör (ACC): Sonuçların tutulduğu ana yazmaç
+pc = 0               # Program Sayacı (PC): Sıradaki komutun bellek adresi
+ir = ""              # Komut Yazmacı (IR): Bellekten getirilen o anki komut
+bellek = []          # Bellek (RAM): Komutların sırayla tutulduğu liste
+calisiyor = True     # İşlemcinin çalışıp çalışmadığını tutan değişken
 
-# Akümülatör (ACC): Aritmetik ve mantıksal işlemlerin sonucunun tutulduğu ana yazmaç.
-akumulator = 0
+# --------------------------------------------------
+# 2. Kullanıcı Girişi ve Belleğe Komut Yükleme
+# --------------------------------------------------
+print("==================================================")
+print("   Mini CPU ve Akümülatör (ACC) Simülatörü")
+print("   Öğrenci: Feyza Güreşen | No: 25360859088")
+print("==================================================")
+print("Desteklenen komutlar: LOAD X, ADD X, SUB X, MUL X, HALT\n")
+print("1 - Yönergedeki örnek programı çalıştır (LOAD 10, ADD 5, SUB 3, HALT)")
+print("2 - Kendi komutlarını klavyeden gir")
 
-# Program Sayacı (PC - Program Counter): Sıradaki çalıştırılacak komutun bellek adresini tutar.
-program_sayaci = 0
-
-# Komut Yazmacı (IR - Instruction Register): Bellekten o an getirilen (Fetch edilen) komutu tutar.
-komut_yazmaci = ""
-
-# Bellek (RAM / Hafıza): Program komutlarının sırasıyla saklandığı liste.
-bellek = []
-
-# İşlemcinin çalışma durumunu kontrol eden bayrak (flag)
-calisiyor = True
-
-# ------------------------------------------------------------------------------
-# BÖLÜM 2: KULLANICI KARŞILAMA VE KOMUTLARIN BELLEĞE YÜKLENMESİ
-# ------------------------------------------------------------------------------
-
-print("=" * 65)
-print("     MINI CPU AKÜMÜLATÖR (ACCUMULATOR) SİMÜLATÖRÜ")
-print("     Öğrenci: Feyza Güreşen | No: 25360859088")
-print("=" * 65)
-print("Desteklenen Temel Komutlar:")
-print("  - LOAD X : Akümülatöre X sayısını yükler (Örn: LOAD 10)")
-print("  - ADD X  : Akümülatöre X sayısını ekler  (Örn: ADD 5)")
-print("  - SUB X  : Akümülatörden X sayısını çıkarır (Örn: SUB 3)")
-print("  - MUL X  : Akümülatördeki sayıyı X ile çarpar (Örn: MUL 2)")
-print("  - HALT   : Programı durdurur / sonlandırır")
-print("-" * 65)
-print("Program modu seçiniz:")
-print("1 - Yönergedeki hazır örnek programı çalıştır (LOAD 10, ADD 5, SUB 3, HALT)")
-print("2 - Kendi komutlarınızı klavyeden girin")
-print("-" * 65)
-
-secim = input("Seçiminiz (1 veya 2): ")
+secim = input("\nSeçiminiz (1 veya 2): ")
 
 if secim == "1":
-    # Yönergede örnek olarak verilen komut dizisi
+    # Proje yönergesinde verilen hazır komutlar
     bellek = ["LOAD 10", "ADD 5", "SUB 3", "HALT"]
-    print("\n[BİLGİ] Hazır komutlar belleğe yüklendi:")
-    for satir in bellek:
-        print("  ->", satir)
+    print("\nHazır komutlar belleğe yüklendi:")
+    for k in bellek:
+        print(" ->", k)
 else:
-    print("\nLütfen komutları sırayla giriniz. Bitirmek için HALT komutunu yazınız:")
-    komut_sirasi = 1
-    giris_devam = True
-    while giris_devam:
-        girilen = input(str(komut_sirasi) + ". Komut: ")
-        # Boş giriş yapılmadıysa belleğe ekle
-        if girilen.strip() != "":
-            bellek.append(girilen.strip())
-            # Kullanıcı HALT yazdıysa veya boş bıraktıysa giriş döngüsünden çık
-            if girilen.strip().upper() == "HALT":
-                giris_devam = False
-            komut_sirasi = komut_sirasi + 1
+    print("\nKomutları sırayla yazınız (Bitirmek için HALT yazın):")
+    komut_no = 1
+    giris_suruyor = True
+    while giris_suruyor:
+        satir = input(str(komut_no) + ". Komut: ").strip()
+        if satir != "":
+            bellek.append(satir)
+            if satir.upper() == "HALT":
+                giris_suruyor = False
+            komut_no = komut_no + 1
         else:
-            print("Boş komut girilemez!")
+            print("Boş komut giremezsiniz!")
 
-# Eğer kullanıcının girdiği listenin sonunda HALT yoksa güvenli durma için otomatik ekleyelim
+# Eğer kullanıcı liste sonuna HALT yazmadıysa işlemcinin güvenle durması için ekliyoruz
 if len(bellek) == 0:
-    print("[UYARI] Belleğe komut girilmediği için varsayılan HALT yüklendi.")
     bellek = ["HALT"]
 elif bellek[-1].upper() != "HALT":
     bellek.append("HALT")
 
-print("\n" + "=" * 65)
-print("           CPU ÇALIŞTIRMA VE MAKİNE DÖNGÜSÜ BAŞLIYOR")
-print("=" * 65)
+print("\n==================================================")
+print("         MAKİNE DÖNGÜSÜ BAŞLATILIYOR")
+print("==================================================")
 
-# ------------------------------------------------------------------------------
-# BÖLÜM 3: MAKİNE DÖNGÜSÜ (FETCH - DECODE - EXECUTE)
-# ------------------------------------------------------------------------------
-
+# --------------------------------------------------
+# 3. Makine Döngüsü (Fetch - Decode - Execute)
+# --------------------------------------------------
 adim = 1
 
 while calisiyor:
-    print("\n" + "-" * 65)
-    print(f"ADIM {adim}:")
-    print("-" * 65)
+    print(f"\n--- ADIM {adim} ---")
 
-    # --------------------------------------------------------------------------
-    # 1. AŞAMA: FETCH (KOMUTU GETİR)
-    # --------------------------------------------------------------------------
-    # Program Sayacının (PC) gösterdiği bellek adresindeki komut okunur ve
-    # Komut Yazmacına (IR) aktarılır. Ardından PC bir sonraki adresi gösterir.
-    if program_sayaci < len(bellek):
-        komut_yazmaci = bellek[program_sayaci]
-        print(f"1. FETCH (Getir)   : Bellek adresi [{program_sayaci}] okundu -> IR = '{komut_yazmaci}'")
-        program_sayaci = program_sayaci + 1
-        print(f"                     Program Sayacı (PC) güncellendi -> PC = {program_sayaci}")
+    # 1. FETCH (Alma) Aşaması:
+    # PC'deki adresten komutu alıp IR'ye aktarıyoruz, ardından PC'yi 1 artırıyoruz.
+    if pc < len(bellek):
+        ir = bellek[pc]
+        print(f"1. Fetch  : Bellek[{pc}] okundu -> IR = '{ir}'")
+        pc = pc + 1
+        print(f"            Program Sayacı güncellendi -> PC = {pc}")
     else:
-        # Bellek sınırına ulaşıldıysa dur
-        print("1. FETCH (Getir)   : Bellek sonuna ulaşıldı.")
+        # Bellek bittiyse durdur
+        print("Fetch hatası: Bellek sonuna ulaşıldı.")
         calisiyor = False
         break
 
-    # --------------------------------------------------------------------------
-    # 2. AŞAMA: DECODE (KOMUTU ÇÖZ)
-    # --------------------------------------------------------------------------
-    # Komut yazmacındaki metin parçalanarak işlem türü (Opcode) ve sayısal değer
-    # (Operand) belirlenir.
-    parcalar = komut_yazmaci.split()
+    # 2. DECODE (Çözümleme) Aşaması:
+    # Komut yazmacındaki metni ayırıp işlem kodunu (Opcode) ve sayıyı (Operand) buluyoruz.
+    parcalar = ir.split()
     islem = parcalar[0].upper()
     sayi = 0
 
     if len(parcalar) > 1:
         sayi = int(parcalar[1])
-        print(f"2. DECODE (Çöz)    : İşlem Kodu (Opcode) = '{islem}', Parametre (Operand) = {sayi}")
+        print(f"2. Decode : İşlem Kodu (Opcode) = {islem}, Sayı (Operand) = {sayi}")
     else:
-        print(f"2. DECODE (Çöz)    : İşlem Kodu (Opcode) = '{islem}' (Parametresiz komut)")
+        print(f"2. Decode : İşlem Kodu (Opcode) = {islem}")
 
-    # --------------------------------------------------------------------------
-    # 3. AŞAMA: EXECUTE (KOMUTU YÜRÜT / ÇALIŞTIR)
-    # --------------------------------------------------------------------------
-    # Belirlenen işleme göre aritmetik-mantık işlemi doğrudan Akümülatör üzerinde yapılır.
+    # 3. EXECUTE (Yürütme) Aşaması:
+    # Çözülen komuta göre işlemi Akümülatör üzerinde yapıyoruz.
     if islem == "LOAD":
-        # Akümülatöre doğrudan yeni değer atanır
+        # Akümülatöre doğrudan yeni sayıyı yüklüyoruz
         akumulator = sayi
-        print(f"3. EXECUTE (Yürüt) : LOAD işlemi yapıldı. Akümülatöre {sayi} değeri yüklendi.")
+        print(f"3. Execute: LOAD çalıştı. Akümülatöre {sayi} yüklendi.")
 
     elif islem == "ADD":
-        # Akümülatördeki mevcut değere sayı eklenir
-        onceki_deger = akumulator
+        # Akümülatördeki sayıya yeni sayıyı ekliyoruz
+        onceki = akumulator
         akumulator = akumulator + sayi
-        print(f"3. EXECUTE (Yürüt) : ADD işlemi yapıldı. {onceki_deger} + {sayi} = {akumulator}")
+        print(f"3. Execute: ADD çalıştı. {onceki} + {sayi} = {akumulator}")
 
     elif islem == "SUB":
-        # Akümülatördeki mevcut değerden sayı çıkarılır
-        onceki_deger = akumulator
+        # Akümülatördeki sayıdan sayıyı çıkarıyoruz
+        onceki = akumulator
         akumulator = akumulator - sayi
-        print(f"3. EXECUTE (Yürüt) : SUB işlemi yapıldı. {onceki_deger} - {sayi} = {akumulator}")
+        print(f"3. Execute: SUB çalıştı. {onceki} - {sayi} = {akumulator}")
 
     elif islem == "MUL":
-        # Akümülatördeki mevcut değer sayı ile çarpılır
-        onceki_deger = akumulator
+        # Akümülatördeki sayıyı yeni sayıyla çarpıyoruz
+        onceki = akumulator
         akumulator = akumulator * sayi
-        print(f"3. EXECUTE (Yürüt) : MUL işlemi yapıldı. {onceki_deger} * {sayi} = {akumulator}")
+        print(f"3. Execute: MUL çalıştı. {onceki} * {sayi} = {akumulator}")
 
     elif islem == "HALT":
-        # Program durdurulur
-        print("3. EXECUTE (Yürüt) : HALT komutu algılandı. İşlemci durduruluyor...")
+        # İşlemciyi durduruyoruz
+        print("3. Execute: HALT komutu geldi, işlemci durduruluyor.")
         calisiyor = False
 
     else:
-        # Tanımlanmayan geçersiz komut durumu
-        print(f"3. EXECUTE (HATA)  : Geçersiz komut algılandı: '{islem}'. İşlem yapılmadı.")
+        print(f"3. Execute: Hatalı komut! '{islem}' tanınmıyor, atlandı.")
 
-    # --------------------------------------------------------------------------
-    # 4. AŞAMA: DURUM RAPORU
-    # --------------------------------------------------------------------------
     # Yönergede istenen format: "PC: X | Akümülatör: Y"
-    print(f">> DURUM RAPORU    : [ PC: {program_sayaci} | Akümülatör (ACC): {akumulator} ]")
+    print(f"-> DURUM: PC: {pc} | Akümülatör: {akumulator}")
 
     adim = adim + 1
 
-# ------------------------------------------------------------------------------
-# BÖLÜM 4: PROGRAM BİTİŞ RAPORU
-# ------------------------------------------------------------------------------
-print("\n" + "=" * 65)
-print("             SİMÜLASYON BAŞARIYLA TAMAMLANDI")
-print("=" * 65)
-print(f"Son Durum:")
-print(f"  - Toplam Çalıştırılan Adım Sayısı : {adim - 1}")
-print(f"  - Nihai Program Sayacı (PC)       : {program_sayaci}")
-print(f"  - Akümülatördeki Nihai Sonuç (ACC): {akumulator}")
-print("=" * 65)
+# --------------------------------------------------
+# 4. Program Sonu Özeti
+# --------------------------------------------------
+print("\n==================================================")
+print("             SİMÜLASYON BİTTİ")
+print("==================================================")
+print(f"Toplam Döngü Adımı : {adim - 1}")
+print(f"Son Program Sayacı : {pc}")
+print(f"Son Akümülatör     : {akumulator}")
+print("==================================================")
