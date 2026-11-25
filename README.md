@@ -126,5 +126,5 @@ Her döngü adımında sırasıyla şu 3 aşama yürütülür:
 ---
 
 ## 📊 Sunum Dosyası Bilgisi
-- **sunum.pdf:** 28 sayfalık teorik sunum, reponun ana dizinindedir.
-- **sunum.pptx:** Sunumun düzenlenebilir PowerPoint sürümüdür (28 slayt).
+- **sunum.pdf:** 27 sayfalık teorik sunum, reponun ana dizinindedir.
+- **sunum.pptx:** Sunumun düzenlenebilir PowerPoint sürümüdür (27 slayt).
