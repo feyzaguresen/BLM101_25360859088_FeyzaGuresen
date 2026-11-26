@@ -27,8 +27,7 @@ BLM101_25360859088_FeyzaGuresen/
 ├── src/
 │   └── main.py               # Ana CPU simülatörü programı
 │
-├── sunum.pdf                 # 28 sayfalık teorik sunum (PDF)
-├── sunum.pptx                # Sunumun düzenlenebilir PowerPoint formatı (28 slayt)
+├── sunum.pdf                 # 27 sayfalık teorik sunum (PDF)
 └── README.md                 # Proje dokümantasyonu (Bu dosya)
 ```
 
@@ -49,7 +48,7 @@ BLM101_25360859088_FeyzaGuresen/
    ```
 
 3. Program açıldığında iki seçenek sunar:
-   - `1`: Yönergedeki hazır örnek programı (`LOAD 10`, `ADD 5`, `SUB 3`, `HALT`) çalıştırır.
+   - `1`: Hazır komut dizisini (`LOAD 10`, `ADD 5`, `SUB 3`, `DIV 2`, `HALT`) çalıştırır.
    - `2`: Kullanıcıya adım adım sorular sorarak kendi programını oluşturur: önce başlangıç sayısı (`LOAD X`), ardından işlem (`1 = Toplama`, `2 = Çıkarma`, `3 = Çarpma`, `4 = Bölme`) ve sayı sorulur. *"Başka işlem eklemek ister misiniz? (e/h)"* sorusuna `h` denince giriş biter ve `HALT` komutu otomatik eklenir.
 
 Desteklenen komutlar: `LOAD X`, `ADD X`, `SUB X`, `MUL X`, `DIV X`, `HALT`
@@ -111,7 +110,7 @@ Her döngü adımında sırasıyla şu 3 aşama yürütülür:
 
 ### Örnek Yürütme ve İzleme (Trace) Tablosu
 
-`LOAD 10`, `ADD 5`, `SUB 3`, `HALT` programının adım adım izlemesi:
+`LOAD 10`, `ADD 5`, `SUB 3`, `DIV 2`, `HALT` programının adım adım izlemesi:
 
 | Döngü Adımı | Bellek Adresi | Yürütülen Komut (IR) | İşlem Mantığı | PC Değeri | Akümülatör (ACC) |
 | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -119,12 +118,12 @@ Her döngü adımında sırasıyla şu 3 aşama yürütülür:
 | **1. Adım** | `0` | `LOAD 10` | Akümülatöre 10 yazıldı | 1 | **10** |
 | **2. Adım** | `1` | `ADD 5` | 10 + 5 toplandı | 2 | **15** |
 | **3. Adım** | `2` | `SUB 3` | 15 - 3 çıkarıldı | 3 | **12** |
-| **4. Adım** | `3` | `HALT` | İşlemci durduruldu | 4 | **12** |
+| **4. Adım** | `3` | `DIV 2` | 12 // 2 bölündü | 4 | **6** |
+| **5. Adım** | `4` | `HALT` | İşlemci durduruldu | 5 | **6** |
 
 > **Not:** PC, komut alındıktan (Fetch) hemen sonra artırıldığı için her adımın sonunda **bir sonraki komutun adresini** gösterir.
 
 ---
 
 ## 📊 Sunum Dosyası Bilgisi
-- **sunum.pdf:** 27 sayfalık teorik sunum, reponun ana dizinindedir.
-- **sunum.pptx:** Sunumun düzenlenebilir PowerPoint sürümüdür (27 slayt).
+- **sunum.pdf:** `src/main.py` simülatörü, komut kümesi (`LOAD`, `ADD`, `SUB`, `MUL`, `DIV`, `HALT`) ve makine döngüsü teorisini içeren 27 sayfalık sunum dosyasıdır.

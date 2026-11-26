@@ -20,7 +20,7 @@ print("   Mini CPU ve Akümülatör (ACC) Simülatörü")
 print("   Öğrenci: Feyza Güreşen | No: 25360859088")
 print("==================================================")
 print("Desteklenen komutlar: LOAD X, ADD X, SUB X, MUL X, DIV X, HALT\n")
-print("1 - Yönergedeki örnek programı çalıştır (LOAD 10, ADD 5, SUB 3, HALT)")
+print("1 - Hazır komut dizisini çalıştır (LOAD 10, ADD 5, SUB 3, DIV 2, HALT)")
 print("2 - Kendi komutlarını klavyeden gir")
 
 secim = input("\nSeçiminiz (1 veya 2): ").strip()
@@ -28,7 +28,7 @@ secim = input("\nSeçiminiz (1 veya 2): ").strip()
 bellek = []
 
 if secim == "1":
-    bellek = ["LOAD 10", "ADD 5", "SUB 3", "HALT"]
+    bellek = ["LOAD 10", "ADD 5", "SUB 3", "DIV 2", "HALT"]
     print("\nHazır komutlar belleğe yüklendi:")
     for k in bellek:
         print(" ->", k)
@@ -48,12 +48,20 @@ else:
     while devam:
         while True:
             print("\nYapmak istediğiniz işlemi giriniz:")
-            islem = input("(1 = Toplama, 2 = Çıkarma, 3 = Çarpma, 4 = Bölme): ").strip()
+            islem = input(
+                "(1 = Toplama, 2 = Çıkarma, 3 = Çarpma, 4 = Bölme): "
+            ).strip()
+
             if islem in ("1", "2", "3", "4"):
                 break
             print("Lütfen 1, 2, 3 veya 4 giriniz!")
 
-        komut_adi = {"1": "ADD", "2": "SUB", "3": "MUL", "4": "DIV"}[islem]
+        komut_adi = {
+            "1": "ADD",
+            "2": "SUB",
+            "3": "MUL",
+            "4": "DIV"
+        }[islem]
 
         while True:
             sayi = input("İşlemde kullanılacak sayıyı giriniz: ").strip()
@@ -62,7 +70,10 @@ else:
                 break
             print("Lütfen geçerli bir tam sayı giriniz!")
 
-        cevap = input("\nBaşka işlem eklemek ister misiniz? (e/h): ").strip().lower()
+        cevap = input(
+            "\nBaşka işlem eklemek ister misiniz? (e/h): "
+        ).strip().lower()
+
         if cevap != "e":
             devam = False
 
@@ -76,6 +87,7 @@ if len(bellek) == 0:
 elif bellek[-1].upper() != "HALT":
     bellek.append("HALT")
 
+    
 print("\n==================================================")
 print("         MAKİNE DÖNGÜSÜ BAŞLATILIYOR")
 print("==================================================")
