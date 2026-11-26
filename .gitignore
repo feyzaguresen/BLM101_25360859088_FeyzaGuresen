@@ -1,7 +1,4 @@
-# Yardımcı araçlar ve yerel dosyalar
 .araclar/
 __pycache__/
 *.pyc
-
-# Sunum PowerPoint dosyası (sadece PDF repoya gidecek)
 *.pptx
