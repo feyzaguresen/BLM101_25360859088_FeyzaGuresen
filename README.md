@@ -39,7 +39,7 @@ BLM101_25360859088_FeyzaGuresen/
 
 1. Terminali proje klasöründe açınız:
    ```bash
-   cd c:\Users\feyyz\OneDrive\Desktop\proje
+   cd BLM101_25360859088_FeyzaGuresen
    ```
 
 2. Simülatörü çalıştırınız:
@@ -48,7 +48,7 @@ BLM101_25360859088_FeyzaGuresen/
    ```
 
 3. Program açıldığında iki seçenek sunar:
-   - `1`: Hazır komut dizisini (`LOAD 10`, `ADD 5`, `SUB 3`, `DIV 2`, `HALT`) çalıştırır.
+   - `1`: Hazır komut dizisini (`LOAD 10`, `ADD 5`, `SUB 3`, `MUL 2`, `DIV 4`, `HALT`) çalıştırır.
    - `2`: Kullanıcıya adım adım sorular sorarak kendi programını oluşturur: önce başlangıç sayısı (`LOAD X`), ardından işlem (`1 = Toplama`, `2 = Çıkarma`, `3 = Çarpma`, `4 = Bölme`) ve sayı sorulur. *"Başka işlem eklemek ister misiniz? (e/h)"* sorusuna `h` denince giriş biter ve `HALT` komutu otomatik eklenir.
 
 Desteklenen komutlar: `LOAD X`, `ADD X`, `SUB X`, `MUL X`, `DIV X`, `HALT`
@@ -110,7 +110,7 @@ Her döngü adımında sırasıyla şu 3 aşama yürütülür:
 
 ### Örnek Yürütme ve İzleme (Trace) Tablosu
 
-`LOAD 10`, `ADD 5`, `SUB 3`, `DIV 2`, `HALT` programının adım adım izlemesi:
+`LOAD 10`, `ADD 5`, `SUB 3`, `MUL 2`, `DIV 4`, `HALT` programının adım adım izlemesi:
 
 | Döngü Adımı | Bellek Adresi | Yürütülen Komut (IR) | İşlem Mantığı | PC Değeri | Akümülatör (ACC) |
 | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -118,8 +118,9 @@ Her döngü adımında sırasıyla şu 3 aşama yürütülür:
 | **1. Adım** | `0` | `LOAD 10` | Akümülatöre 10 yazıldı | 1 | **10** |
 | **2. Adım** | `1` | `ADD 5` | 10 + 5 toplandı | 2 | **15** |
 | **3. Adım** | `2` | `SUB 3` | 15 - 3 çıkarıldı | 3 | **12** |
-| **4. Adım** | `3` | `DIV 2` | 12 // 2 bölündü | 4 | **6** |
-| **5. Adım** | `4` | `HALT` | İşlemci durduruldu | 5 | **6** |
+| **4. Adım** | `3` | `MUL 2` | 12 * 2 çarpıldı | 4 | **24** |
+| **5. Adım** | `4` | `DIV 4` | 24 // 4 bölündü | 5 | **6** |
+| **6. Adım** | `5` | `HALT` | İşlemci durduruldu | 6 | **6** |
 
 > **Not:** PC, komut alındıktan (Fetch) hemen sonra artırıldığı için her adımın sonunda **bir sonraki komutun adresini** gösterir.
 

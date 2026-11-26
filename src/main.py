@@ -20,15 +20,19 @@ print("   Mini CPU ve Akümülatör (ACC) Simülatörü")
 print("   Öğrenci: Feyza Güreşen | No: 25360859088")
 print("==================================================")
 print("Desteklenen komutlar: LOAD X, ADD X, SUB X, MUL X, DIV X, HALT\n")
-print("1 - Hazır komut dizisini çalıştır (LOAD 10, ADD 5, SUB 3, DIV 2, HALT)")
+print("1 - Hazır komut dizisini çalıştır (LOAD 10, ADD 5, SUB 3, MUL 2, DIV 4, HALT)")
 print("2 - Kendi komutlarını klavyeden gir")
 
-secim = input("\nSeçiminiz (1 veya 2): ").strip()
+while True:
+    secim = input("\nSeçiminiz (1 veya 2): ").strip()
+    if secim in ("1", "2"):
+        break
+    print("Geçersiz seçim! Lütfen yalnızca 1 veya 2 giriniz.")
 
 bellek = []
 
 if secim == "1":
-    bellek = ["LOAD 10", "ADD 5", "SUB 3", "DIV 2", "HALT"]
+    bellek = ["LOAD 10", "ADD 5", "SUB 3", "MUL 2", "DIV 4", "HALT"]
     print("\nHazır komutlar belleğe yüklendi:")
     for k in bellek:
         print(" ->", k)
